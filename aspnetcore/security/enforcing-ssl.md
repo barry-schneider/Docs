@@ -26,13 +26,13 @@ This document shows how to:
 
 ::: moniker range=">= aspnetcore-2.1"
 
-We recommend all ASP.NET Core web apps call HTTPS Redirection Middleware ([UseHttpsRedirection](/dotnet/api/microsoft.aspnetcore.builder.httpspolicybuilderextensions.usehttpsredirection)) to redirect all HTTP requests to HTTPS.
+We recommend all ASP.NET Core web apps call HTTPS Redirection Middleware `UseHttpsRedirection` [[Reference](/dotnet/api/microsoft.aspnetcore.builder.httpspolicybuilderextensions.usehttpsredirection)] [[Source](https://github.com/aspnet/BasicMiddleware/blob/master/src/Microsoft.AspNetCore.HttpsPolicy/HttpsRedirectionBuilderExtensions.cs)] to redirect all HTTP requests to HTTPS.
 
 The following code calls `UseHttpsRedirection` in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet1&highlight=13)]
 
-The following code calls [AddHttpsRedirection](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection) to configure middleware options in the `Startup` class:
+The following code calls `AddHttpsRedirection` [[Reference](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection)] [[Code](https://github.com/aspnet/BasicMiddleware/blob/master/src/Microsoft.AspNetCore.HttpsPolicy/HttpsRedirectionServicesExtensions.cs)] to configure middleware options in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet2&highlight=33-44)]
 
