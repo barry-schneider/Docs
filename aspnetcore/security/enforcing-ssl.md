@@ -12,8 +12,8 @@ By [Rick Anderson](https://twitter.com/RickAndMSFT)
 
 This document shows how to:
 
-* Require HTTPS for all requests.
 * Redirect all HTTP requests to HTTPS.
+* Force browsers to communicate with website using HTTPS.
 
 > [!WARNING]
 > Do **not** use [RequireHttpsAttribute](/dotnet/api/microsoft.aspnetcore.mvc.requirehttpsattribute) on Web APIs that receive sensitive information. `RequireHttpsAttribute` uses HTTP status codes to redirect browsers from HTTP to HTTPS. API clients may not understand or obey redirects from HTTP to HTTPS. Such clients may send information over HTTP. Web APIs should either:
@@ -21,8 +21,8 @@ This document shows how to:
 > * Not listen on HTTP.
 > * Close the connection with status code 400 (Bad Request) and not serve the request.
 
-<a name="require"></a>
-## Require HTTPS
+<a name="Redirect"></a>
+## Redirect all HTTP requests to HTTPS
 
 ::: moniker range=">= aspnetcore-2.1"
 
@@ -32,12 +32,7 @@ The following code calls `UseHttpsRedirection` in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet1&highlight=13)]
 
-The preceding highlighted code:
-
-* Uses the default [HttpsRedirectionOptions.RedirectStatusCode](/dotnet/api/microsoft.aspnetcore.httpspolicy.httpsredirectionoptions.redirectstatuscode) (`Status307TemporaryRedirect`). Production apps should call [UseHsts](#hsts).
-* Uses the default [HttpsRedirectionOptions.HttpsPort](/dotnet/api/microsoft.aspnetcore.httpspolicy.httpsredirectionoptions.httpsport) (443).
-
-The following code calls [AddHttpsRedirection](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection) to configure middleware options:
+The following code calls [AddHttpsRedirection](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection) to configure middleware options in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet2&highlight=33-44)]
 
@@ -92,7 +87,7 @@ Requiring HTTPS globally (`options.Filters.Add(new RequireHttpsAttribute());`) i
 ::: moniker range=">= aspnetcore-2.1"
 
 <a name="hsts"></a>
-## HTTP Strict Transport Security Protocol (HSTS)
+## Force browsers to communicate with website using HTTPS
 
 Per [OWASP](https://www.owasp.org/index.php/About_The_Open_Web_Application_Security_Project), [HTTP Strict Transport Security (HSTS)](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet) is an opt-in security enhancement that's specified by a web app through the use of a response header. When a browser that supports HSTS receives this header:
 
@@ -130,7 +125,7 @@ The preceding example shows how to add additional hosts.
 <a name="https"></a>
 ## Opt-out of HTTPS on project creation
 
-The ASP.NET Core 2.1 or later web application templates (from Visual Studio or the dotnet command line) enable [HTTPS redirection](#require) and [HSTS](#hsts). For deployments that don't require HTTPS, you can opt-out of HTTPS. For example, some backend services where HTTPS is being handled externally at the edge, using HTTPS at each node is not needed.
+The ASP.NET Core 2.1 or later web application templates (from Visual Studio or the dotnet command line) enable [HTTPS redirection](#Redirect) and [HSTS](#hsts). For deployments that don't require HTTPS, you can opt-out of HTTPS. For example, some backend services where HTTPS is being handled externally at the edge, using HTTPS at each node is not needed.
 
 To opt-out of HTTPS:
 
