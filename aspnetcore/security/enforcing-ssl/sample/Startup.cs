@@ -33,15 +33,14 @@ namespace WebHTTPS
             services.AddHttpsRedirection(options =>
             {
                 options.HttpsPort = 443;
-				// if the web server is behind another device then non-standard port may need to be used
-				// options.HttpsPort = 5001;
+		// if the web server is behind another device then non-standard port may need to be needed, for example
+		// options.HttpsPort = 5001;
 				
-				//Temporary Redirect https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307
-				options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; 
+		//Temporary Redirect https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307
+		options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect; 
 				
                 //Permanent Redirect https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/308
-				//options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect; 
-
+		//options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect; 
             });            
         }
         #endregion
