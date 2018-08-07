@@ -32,7 +32,7 @@ The following code calls `UseHttpsRedirection` in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet1&highlight=13)]
 
-The following code calls `AddHttpsRedirection` [[Reference](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection)] [[Code](https://github.com/aspnet/BasicMiddleware/blob/master/src/Microsoft.AspNetCore.HttpsPolicy/HttpsRedirectionServicesExtensions.cs)] to configure middleware options in the `Startup` class:
+The following code calls `AddHttpsRedirection` [[Reference](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection)] [[Code](https://github.com/aspnet/BasicMiddleware/blob/master/src/Microsoft.AspNetCore.HttpsPolicy/HttpsRedirectionServicesExtensions.cs)] which uses `HttpsRedirectionMiddleware` [[Reference]] [[Code](https://github.com/aspnet/BasicMiddleware/blob/master/src/Microsoft.AspNetCore.HttpsPolicy/HttpsRedirectionMiddleware.cs)] to configure middleware options in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet2&highlight=33-44)]
 
