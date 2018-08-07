@@ -2,12 +2,8 @@
 title: Introduction to Identity on ASP.NET Core
 author: rick-anderson
 description: Use Identity with an ASP.NET Core app. Includes, Setting password requirements (RequireDigit,RequiredLength,RequiredUniqueChars and more).
-manager: wpickett
 ms.author: riande
 ms.date: 01/24/2018
-ms.prod: asp.net-core
-ms.technology: aspnet
-ms.topic: article
 uid: security/authentication/identity
 ---
 # Introduction to Identity on ASP.NET Core
@@ -140,7 +136,7 @@ In this topic, you'll learn how to use ASP.NET Core Identity to add functionalit
 
 7. View the database.
 
-   If your app is using a SQL Server database (the default on Windows and for Visual Studio users), you can view the database the app created. You can use **SQL Server Management Studio**. Alternatively, from Visual Studio, select **View** > **SQL Server Object Explorer**. Connect to **(localdb)\MSSQLLocalDB**. The database with a name matching **aspnet-<*name of your project*>-<*date string*>** is displayed.
+   If your app is using a SQL Server database (the default on Windows and for Visual Studio users), you can view the database the app created. You can use **SQL Server Management Studio**. Alternatively, from Visual Studio, select **View** > **SQL Server Object Explorer**. Connect to **(localdb)\MSSQLLocalDB**. The database with a name matching `aspnet-<name of your project>-<guid>` is displayed.
 
    ![Contextual menu on AspNetUsers database table](identity/_static/04-db.png)
 
@@ -197,7 +193,8 @@ See [Configuration](#pw) for a sample that sets the minimum password requirement
 
 ## Next Steps
 
-* [Migrate Authentication and Identity](xref:migration/identity)
-* [Account Confirmation and Password Recovery](xref:security/authentication/accconfirm)
-* [Two-factor authentication with SMS](xref:security/authentication/2fa)
-* [Facebook, Google, and external provider authentication](xref:security/authentication/social/index)
+* <xref:migration/identity>
+* <xref:security/authentication/accconfirm>
+* <xref:security/authentication/2fa>
+* <xref:security/authentication/social/index>
+* <xref:host-and-deploy/web-farm>

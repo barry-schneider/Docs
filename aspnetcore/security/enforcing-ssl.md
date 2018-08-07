@@ -2,12 +2,8 @@
 title: Enforce HTTPS in ASP.NET Core
 author: rick-anderson
 description: Shows how to require HTTPS/TLS in a ASP.NET Core web app.
-manager: wpickett
 ms.author: riande
 ms.date: 2/9/2018
-ms.prod: asp.net-core
-ms.technology: aspnet
-ms.topic: article
 uid: security/enforcing-ssl
 ---
 # Enforce HTTPS in ASP.NET Core
@@ -36,6 +32,11 @@ The following code calls `UseHttpsRedirection` in the `Startup` class:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet1&highlight=13)]
 
+The preceding highlighted code:
+
+* Uses the default [HttpsRedirectionOptions.RedirectStatusCode](/dotnet/api/microsoft.aspnetcore.httpspolicy.httpsredirectionoptions.redirectstatuscode) (`Status307TemporaryRedirect`). Production apps should call [UseHsts](#hsts).
+* Uses the default [HttpsRedirectionOptions.HttpsPort](/dotnet/api/microsoft.aspnetcore.httpspolicy.httpsredirectionoptions.httpsport) (443).
+
 The following code calls [AddHttpsRedirection](/dotnet/api/microsoft.aspnetcore.builder.httpsredirectionservicesextensions.addhttpsredirection) to configure middleware options:
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet2&highlight=33-44)]
@@ -43,11 +44,18 @@ The following code calls [AddHttpsRedirection](/dotnet/api/microsoft.aspnetcore.
 > [!NOTE]
 > When an app is run behind a reverse proxy (for example, IIS, IIS Express), the port must be manually configured. 
 
-The port can be configured by setting the:
+The port can be configured by setting the [https_port Web Host configuration setting](xref:fundamentals/host/web-host#https-port):
 
-* `ASPNETCORE_HTTPS_PORT` environment variable.
-* `http_port` host configuration key (for example, via *hostsettings.json* or a command line argument).
-* [HttpsRedirectionOptions.HttpsPort](/dotnet/api/microsoft.aspnetcore.httpspolicy.httpsredirectionoptions.httpsport). See the preceding example that shows how to set the port to 5001.
+**Key**: https_port
+**Type**: *string*
+**Default**: A default value isn't set.
+**Set using**: `UseSetting`
+**Environment variable**: `<PREFIX_>HTTPS_PORT` (The prefix is `ASPNETCORE_` when using the Web Host.)
+
+```csharp
+WebHost.CreateDefaultBuilder(args)
+    .UseSetting("https_port", "8080")
+```
 
 > [!NOTE]
 > The port can be configured indirectly by setting the URL with the `ASPNETCORE_URLS` environment variable. The environment variable configures the server, and then the middleware indirectly discovers the HTTPS port via `IServerAddressesFeature`.
@@ -57,19 +65,24 @@ If no port is set:
 * Requests aren't redirected.
 * The middleware logs a warning.
 
+> [!NOTE]
+> An alternative to using HTTPS Redirection Middleware (`UseHttpsRedirection`) is to use URL Rewriting Middleware (`AddRedirectToHttps`). `AddRedirectToHttps` can also set the status code and port when the redirect is executed. For more information, see [URL Rewriting Middleware](xref:fundamentals/url-rewriting).
+>
+> When redirecting to HTTPS without the requirement for additional redirect rules, we recommend using HTTPS Redirection Middleware (`UseHttpsRedirection`) described in this topic.
+
 ::: moniker-end
 
 ::: moniker range="< aspnetcore-2.1"
 
 The [RequireHttpsAttribute](/dotnet/api/microsoft.aspnetcore.mvc.requirehttpsattribute) is used to require HTTPS. `[RequireHttpsAttribute]` can decorate controllers or methods, or can be applied globally. To apply the attribute globally, add the following code to `ConfigureServices` in `Startup`:
 
-[!code-csharp[](authentication/accconfirm/sample/WebApp1/Startup.cs?name=snippet2&highlight=4-999)]
+[!code-csharp[](~/security/authentication/accconfirm/sample/WebApp1/Startup.cs?name=snippet2&highlight=4-999)]
 
 The preceding highlighted code requires all requests use `HTTPS`; therefore, HTTP requests are ignored. The following highlighted code redirects all HTTP requests to HTTPS:
 
 [!code-csharp[](authentication/accconfirm/sample/WebApp1/Startup.cs?name=snippet_AddRedirectToHttps&highlight=7-999)]
 
-For more information, see [URL Rewriting Middleware](xref:fundamentals/url-rewriting).
+For more information, see [URL Rewriting Middleware](xref:fundamentals/url-rewriting). The middleware also permits the app to set the status code or the status code and the port when the redirect is executed.
 
 Requiring HTTPS globally (`options.Filters.Add(new RequireHttpsAttribute());`) is a security best practice. Applying the
 `[RequireHttps]` attribute to all controllers/Razor Pages isn't considered as secure as requiring HTTPS globally. You can't guarantee the `[RequireHttps]` attribute is applied when new controllers and Razor Pages are added.
@@ -81,13 +94,18 @@ Requiring HTTPS globally (`options.Filters.Add(new RequireHttpsAttribute());`) i
 <a name="hsts"></a>
 ## HTTP Strict Transport Security Protocol (HSTS)
 
-Per [OWASP](https://www.owasp.org/index.php/About_The_Open_Web_Application_Security_Project), [HTTP Strict Transport Security (HSTS)](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet) is an opt-in security enhancement that is specified by a web application through the use of a special response header. Once a supported browser receives this header that browser will prevent any communications from being sent over HTTP to the specified domain and will instead send all communications over HTTPS. It also prevents HTTPS click through prompts on browsers.
+Per [OWASP](https://www.owasp.org/index.php/About_The_Open_Web_Application_Security_Project), [HTTP Strict Transport Security (HSTS)](https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet) is an opt-in security enhancement that's specified by a web app through the use of a response header. When a browser that supports HSTS receives this header:
+
+* The browser stores configuration for the domain that prevents sending any communication over HTTP. The browser forces all communication over HTTPS. 
+* The browser prevents the user from using untrusted or invalid certificates. The browser disables prompts that allow a user to temporarily trust such a certificate.
 
 ASP.NET Core 2.1 or later implements HSTS with the `UseHsts` extension method. The following code calls `UseHsts` when the app isn't in [development mode](xref:fundamentals/environments):
 
 [!code-csharp[](enforcing-ssl/sample/Startup.cs?name=snippet1&highlight=10)]
 
-`UseHsts` is not recommend in development because the HSTS header is highly cachable by browsers. By default, UseHsts excludes the local loopback address.
+`UseHsts` isn't recommended in development because the HSTS header is highly cacheable by browsers. By default, `UseHsts` excludes the local loopback address.
+
+For production environments implementing HTTPS for the first time, set the initial HSTS value to a small value. Set the value from hours to no more than a single day in case you need to revert the HTTPS infrastructure to HTTP. After you're confident in the sustainability of the HTTPS configuration, increase the HSTS max-age value; a commonly used value is one year. 
 
 The following code:
 
